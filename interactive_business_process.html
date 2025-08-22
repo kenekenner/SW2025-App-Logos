@@ -1,0 +1,1404 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Business Process Whiteboard</title>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@200;300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Plus Jakarta Sans', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: #f8f9fb;
+            overflow: hidden;
+            height: 100vh;
+            touch-action: none;
+            color: #2c3e50;
+            font-weight: 300;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+        }
+
+        .nav-bar {
+            background: #ffffff;
+            border-bottom: 1px solid #e1e5e9;
+            padding: 16px 24px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            min-height: 72px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            z-index: 100;
+        }
+
+        .nav-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a202c;
+        }
+
+        .nav-controls {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .nav-btn {
+            padding: 10px 20px;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 100px;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .nav-btn:hover {
+            background: #4338ca;
+            transform: translateY(-1px);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .nav-btn:disabled {
+            background: #9ca3af;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .process-dropdown {
+            position: relative;
+            display: inline-block;
+        }
+
+        .dropdown-btn {
+            padding: 10px 20px;
+            background: #ffffff;
+            color: #374151;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            min-width: 200px;
+            touch-action: manipulation;
+            transition: all 0.2s ease;
+            box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .dropdown-btn:hover {
+            background: #f8f9fb;
+            border-color: #d1d5db;
+        }
+
+        .dropdown-arrow {
+            transition: transform 0.2s ease;
+            font-size: 12px;
+        }
+
+        .dropdown-content {
+            display: none;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            right: 0;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            z-index: 1000;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 4px;
+        }
+
+        .dropdown-content.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 12px 16px;
+            cursor: pointer;
+            font-size: 14px;
+            border-bottom: 1px solid #f3f4f6;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-item:last-child {
+            border-bottom: none;
+        }
+
+        .dropdown-item:hover {
+            background: #f8f9fb;
+        }
+
+        .dropdown-item.active {
+            background: #eff6ff;
+            color: #1d4ed8;
+            font-weight: 600;
+        }
+
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: #ffffff;
+            margin: 0 16px 16px 16px;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .process-title {
+            background: #000000;
+            color: white;
+            text-align: center;
+            padding: 24px;
+            font-size: 28px;
+            font-weight: 300;
+            letter-spacing: -0.025em;
+        }
+
+        .diagram-area {
+            flex: 1;
+            background: #f3f3f5;
+            background-image: radial-gradient(circle, #d1d5db 1px, transparent 1px);
+            background-size: 20px 20px;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 400px;
+        }
+
+        .legend {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            background: #ffffff;
+            padding: 16px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            font-size: 12px;
+            z-index: 100;
+        }
+
+        .legend-title {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #374151;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+
+        .legend-item:last-child {
+            margin-bottom: 0;
+        }
+
+        .legend-line {
+            width: 24px;
+            height: 2px;
+            margin-right: 8px;
+        }
+
+        .legend-line.solid {
+            background: #000000;
+        }
+
+        .legend-line.dashed {
+            background: repeating-linear-gradient(
+                to right,
+                #000000 0px,
+                #000000 4px,
+                transparent 4px,
+                transparent 8px
+            );
+        }
+
+        .connection-lines {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            z-index: 6;
+            pointer-events: none;
+        }
+
+        .connection-line {
+            position: absolute;
+            background: #000000;
+            z-index: 6;
+        }
+
+        .connection-line.solid {
+            background: #000000;
+        }
+
+        .connection-line.dashed {
+            background: repeating-linear-gradient(
+                to right,
+                #000000 0px,
+                #000000 6px,
+                transparent 6px,
+                transparent 12px
+            );
+        }
+
+        .connection-line.vertical.dashed {
+            background: repeating-linear-gradient(
+                to bottom,
+                #000000 0px,
+                #000000 6px,
+                transparent 6px,
+                transparent 12px
+            );
+        }
+
+        .celigo-center {
+            width: 120px;
+            height: 120px;
+            background: linear-gradient(135deg, #1a202c 0%, #2d3748 100%);
+            border-radius: 50%;
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            font-weight: 700;
+            position: relative;
+            z-index: 10;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 3px solid #ffffff;
+        }
+
+        .process-nodes {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+        }
+
+        .process-node {
+            position: absolute;
+            width: 120px;
+            height: 90px;
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            font-weight: 400;
+            text-align: center;
+            padding: 12px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+            color: #4a5568;
+            transition: all 0.2s ease;
+            z-index: 10;
+        }
+
+        .process-node:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .app-tiles-drawer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: #000000;
+            border-top: 2px solid #ffffff;
+            z-index: 500;
+            height: 250px;
+            min-height: 50px;
+            max-height: 70vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .drawer-handle {
+            background: transparent;
+            padding: 8px 0;
+            cursor: ns-resize;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            user-select: none;
+            flex-shrink: 0;
+            transform: translateY(-18px);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .resize-handle {
+            display: flex;
+            width: 26px;
+            height: 18px;
+            flex-direction: column;
+            justify-content: center;
+            align-items: flex-start;
+            gap: 3px;
+            border-radius: 4px;
+            border: 1px solid #FFF;
+            background: #D9D9D9;
+            padding: 4px;
+        }
+
+        .resize-row {
+            display: flex;
+            gap: 3px;
+            width: 100%;
+            justify-content: space-between;
+        }
+
+        .resize-dot {
+            background: #000000;
+            border-radius: 50%;
+            width: 3px;
+            height: 3px;
+            flex-shrink: 0;
+        }
+
+        .drawer-handle:hover .resize-handle {
+            background: #E5E5E5;
+        }
+
+        .app-tiles-section {
+            padding: 24px;
+            overflow-y: auto;
+            background: #000000;
+            flex: 1;
+        }
+
+        .tiles-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 20px;
+        }
+
+        .tile-category {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+            transition: all 0.2s ease;
+        }
+
+        .tile-category:hover {
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        }
+
+        .category-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #374151;
+            padding: 16px 20px;
+            background: #f8f9fb;
+            border-bottom: 1px solid #e2e8f0;
+            text-align: center;
+        }
+
+        .app-tiles {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(80px, 1fr));
+            gap: 8px;
+            padding: 16px;
+        }
+
+        .app-tile {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 12px 8px;
+            text-align: center;
+            cursor: grab;
+            user-select: none;
+            font-size: 11px;
+            font-weight: 500;
+            min-height: 70px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+            touch-action: none;
+            position: relative;
+            z-index: 1;
+            color: #4a5568;
+        }
+
+        .app-tile img {
+            max-width: 40px;
+            max-height: 40px;
+            object-fit: contain;
+        }
+
+        .app-tile.has-logo {
+            padding: 8px;
+        }
+
+        .app-tile:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-color: #4f46e5;
+        }
+
+        .app-tile.dragging {
+            transform: rotate(3deg) scale(1.05);
+            box-shadow: 0 12px 24px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            cursor: grabbing;
+            border-color: #4f46e5;
+        }
+
+        .app-tile.dropped {
+            position: absolute;
+            z-index: 100;
+            background: #ffffff;
+            border: 2px solid #4f46e5;
+            box-shadow: 0 4px 12px rgba(79, 70, 229, 0.15);
+        }
+
+        .reset-btn {
+            position: fixed;
+            top: 90px;
+            right: 24px;
+            padding: 12px 20px;
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            z-index: 1001;
+            transition: all 0.2s ease;
+        }
+
+        .reset-btn:hover {
+            background: #f8f9fb;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Page-specific layouts */
+        .page {
+            display: none;
+        }
+
+        .page.active {
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        /* Custom scrollbar */
+        .app-tiles-section::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .app-tiles-section::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+
+        .app-tiles-section::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 3px;
+        }
+
+        .app-tiles-section::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Responsive adjustments for large screens */
+        @media (min-width: 1200px) {
+            .nav-title { font-size: 24px; }
+            .nav-btn { font-size: 16px; padding: 12px 24px; }
+            .process-title { font-size: 32px; padding: 32px; }
+            .app-tile { min-height: 80px; font-size: 12px; }
+            .category-title { font-size: 16px; }
+            .celigo-center { width: 140px; height: 140px; font-size: 24px; }
+            .process-node { width: 140px; height: 100px; font-size: 13px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="nav-bar">
+            <div class="nav-title">Interactive Business Process Whiteboard</div>
+            <div class="nav-controls">
+                <button class="nav-btn" onclick="previousPage()">← Previous</button>
+                
+                <div class="process-dropdown">
+                    <button class="dropdown-btn" onclick="toggleDropdown()">
+                        <span id="current-process-name">Data Warehousing and Analytics</span>
+                        <span class="dropdown-arrow">▼</span>
+                    </button>
+                    <div class="dropdown-content" id="process-dropdown">
+                        <div class="dropdown-item active" onclick="goToPage(1)">Data Warehousing and Analytics</div>
+                        <div class="dropdown-item" onclick="goToPage(2)">Human Resources / Hire to Retire</div>
+                        <div class="dropdown-item" onclick="goToPage(3)">Marketing Automation</div>
+                        <div class="dropdown-item" onclick="goToPage(4)">Finance Automation</div>
+                        <div class="dropdown-item" onclick="goToPage(5)">SaaS, Services</div>
+                        <div class="dropdown-item" onclick="goToPage(6)">Product Companies</div>
+                        <div class="dropdown-item" onclick="goToPage(7)">3PL Process</div>
+                        <div class="dropdown-item" onclick="goToPage(8)">Item Management</div>
+                        <div class="dropdown-item" onclick="goToPage(9)">Customer Experience Management</div>
+                        <div class="dropdown-item" onclick="goToPage(10)">Data Warehouse</div>
+                        <div class="dropdown-item" onclick="goToPage(11)">Demand Planning</div>
+                    </div>
+                </div>
+
+                <div class="page-indicator">
+                    <span id="current-page">1</span> / <span id="total-pages">11</span>
+                </div>
+                
+                <button class="nav-btn" onclick="nextPage()">Next →</button>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <!-- Page 1: Data Warehousing and Analytics -->
+            <div class="page active" id="page-1">
+                <div class="process-title">Data Warehousing and Analytics</div>
+                <div class="diagram-area">
+                    <div class="legend">
+                        <div class="legend-title">Legend</div>
+                        <div class="legend-item">
+                            <div class="legend-line solid"></div>
+                            <span>Current State</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-line dashed"></div>
+                            <span>Future State</span>
+                        </div>
+                    </div>
+                    
+                    <div class="connection-lines">
+                        <!-- Example connections - need specific patterns from PDF -->
+                        <!-- Top to center -->
+                        <div class="connection-line solid vertical" style="top: 50%; left: 50%; width: 2px; height: 80px; transform: translate(-50%, -100%);"></div>
+                        <!-- Center to right -->
+                        <div class="connection-line dashed" style="top: 50%; left: 50%; width: 100px; height: 2px; transform: translateY(-50%);"></div>
+                        <!-- Center to bottom -->
+                        <div class="connection-line solid vertical" style="top: 50%; left: 50%; width: 2px; height: 80px; transform: translateX(-50%);"></div>
+                        <!-- Center to left -->
+                        <div class="connection-line dashed" style="top: 50%; left: 50%; width: 100px; height: 2px; transform: translate(-100%, -50%);"></div>
+                    </div>
+                    
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <!-- Top -->
+                        <div class="process-node" style="top: 8%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <!-- Top-right -->
+                        <div class="process-node" style="top: 15%; right: 15%;">BI/reporting</div>
+                        <!-- Right -->
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Predictive analytics</div>
+                        <!-- Bottom-right -->
+                        <div class="process-node" style="bottom: 15%; right: 15%;">Data-driven application</div>
+                        <!-- Bottom -->
+                        <div class="process-node" style="bottom: 8%; left: 50%; transform: translateX(-50%);">Cloud Data Warehouses</div>
+                        <!-- Bottom-left -->
+                        <div class="process-node" style="bottom: 15%; left: 15%;">Mobile</div>
+                        <!-- Left -->
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">Web</div>
+                        <!-- Top-left -->
+                        <div class="process-node" style="top: 15%; left: 15%;">IoT</div>
+                        <!-- Additional inner nodes -->
+                        <div class="process-node" style="bottom: 30%; left: 25%;">Corporate</div>
+                        <div class="process-node" style="bottom: 30%; right: 25%;">3rd party</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 2: Human Resources / Hire to Retire -->
+            <div class="page" id="page-2">
+                <div class="process-title">Human Resources / Hire to Retire</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <!-- Top -->
+                        <div class="process-node" style="top: 8%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <!-- Top-right -->
+                        <div class="process-node" style="top: 15%; right: 15%;">Benefits</div>
+                        <!-- Right -->
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Performance Management</div>
+                        <!-- Bottom-right -->
+                        <div class="process-node" style="bottom: 15%; right: 15%;">Job-Specific Apps</div>
+                        <!-- Bottom -->
+                        <div class="process-node" style="bottom: 8%; left: 50%; transform: translateX(-50%);">Accounting</div>
+                        <!-- Bottom-left -->
+                        <div class="process-node" style="bottom: 15%; left: 15%;">Expense Management</div>
+                        <!-- Left -->
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">ATS</div>
+                        <!-- Top-left -->
+                        <div class="process-node" style="top: 15%; left: 15%;">Timesheets</div>
+                        <!-- Additional nodes -->
+                        <div class="process-node" style="top: 35%; right: 8%;">SSO / Identity Management</div>
+                        <div class="process-node" style="bottom: 35%; right: 8%;">Productivity Apps</div>
+                        <div class="process-node" style="bottom: 50%; left: 8%; transform: translateY(50%);">Time Sheets</div>
+                        <div class="process-node" style="bottom: 35%; left: 8%;">Training</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 3: Marketing Automation -->
+            <div class="page" id="page-3">
+                <div class="process-title">Marketing Automation</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <!-- Top -->
+                        <div class="process-node" style="top: 8%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <!-- Top-right -->
+                        <div class="process-node" style="top: 20%; right: 20%;">Data & Analytics</div>
+                        <!-- Right -->
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Management</div>
+                        <!-- Bottom-right -->
+                        <div class="process-node" style="bottom: 20%; right: 25%;">CRM</div>
+                        <!-- Bottom -->
+                        <div class="process-node" style="bottom: 8%; left: 50%; transform: translateX(-50%);">Marketing Automation</div>
+                        <!-- Bottom-left -->
+                        <div class="process-node" style="bottom: 20%; left: 25%;">Intent</div>
+                        <!-- Left -->
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">Content & Experience</div>
+                        <!-- Top-left -->
+                        <div class="process-node" style="top: 20%; left: 20%;">Advertising / Promotion</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 4: Finance Automation -->
+            <div class="page" id="page-4">
+                <div class="process-title">Finance Automation</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <!-- Top -->
+                        <div class="process-node" style="top: 8%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <!-- Top-right -->
+                        <div class="process-node" style="top: 20%; right: 20%;">Subscriptions & Payments</div>
+                        <!-- Right -->
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">CPQ</div>
+                        <!-- Bottom-right -->
+                        <div class="process-node" style="bottom: 20%; right: 20%;">Accounting Close</div>
+                        <!-- Bottom -->
+                        <div class="process-node" style="bottom: 20%; left: 30%;">Corporate Performance</div>
+                        <div class="process-node" style="bottom: 20%; right: 30%;">Expense Management</div>
+                        <!-- Bottom-left -->
+                        <div class="process-node" style="bottom: 20%; left: 20%;">Contract Management</div>
+                        <!-- Left -->
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">A/P & Procurement</div>
+                        <!-- Top-left -->
+                        <div class="process-node" style="top: 20%; left: 20%;">CRM</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 5: SaaS, Services -->
+            <div class="page" id="page-5">
+                <div class="process-title">SaaS, Services</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 25%; left: 15%;">Productivity and Collaboration</div>
+                        <div class="process-node" style="top: 25%; right: 15%;">Storefronts and Marketplaces</div>
+                        <div class="process-node" style="top: 45%; left: 8%;">Finance</div>
+                        <div class="process-node" style="top: 45%; right: 8%;">Payment Gateways/POS</div>
+                        <div class="process-node" style="bottom: 45%; left: 8%;">Customer Experience Management</div>
+                        <div class="process-node" style="bottom: 45%; right: 8%;">Manufacturing</div>
+                        <div class="process-node" style="bottom: 25%; left: 15%;">Sales and Marketing</div>
+                        <div class="process-node" style="bottom: 25%; right: 15%;">Demand Planning / Forecasting</div>
+                        <div class="process-node" style="bottom: 10%; left: 30%;">HR / Employee Onboarding</div>
+                        <div class="process-node" style="bottom: 10%; right: 30%;">Portfolio Management</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 6: Product Companies -->
+            <div class="page" id="page-6">
+                <div class="process-title">Product Companies - Ecommerce, Wholesale Distribution, Manufacturing, Supply Chain</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 25%; left: 15%;">Productivity and Collaboration</div>
+                        <div class="process-node" style="top: 25%; right: 15%;">Storefronts and Marketplaces</div>
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">Finance</div>
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Payment Gateways/POS</div>
+                        <div class="process-node" style="bottom: 35%; left: 8%;">Customer Experience Management</div>
+                        <div class="process-node" style="bottom: 35%; right: 8%;">Manufacturing</div>
+                        <div class="process-node" style="bottom: 20%; left: 15%;">Sales and Marketing</div>
+                        <div class="process-node" style="bottom: 20%; right: 15%;">Demand Planning / Forecasting</div>
+                        <div class="process-node" style="bottom: 35%; left: 25%;">HR / Employee Onboarding</div>
+                        <div class="process-node" style="bottom: 35%; right: 25%;">Portfolio Management</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 7: 3PL Process -->
+            <div class="page" id="page-7">
+                <div class="process-title">3PL Process</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 30%; left: 20%;">Retail End</div>
+                        <div class="process-node" style="top: 30%; right: 20%;">Supplier</div>
+                        <div class="process-node" style="bottom: 30%; left: 20%;">Supplier</div>
+                        <div class="process-node" style="bottom: 30%; right: 20%;">B2B Warehouse</div>
+                        <div class="process-node" style="bottom: 15%; left: 50%; transform: translateX(-50%);">B2C Customer</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 8: Item Management -->
+            <div class="page" id="page-8">
+                <div class="process-title">Item Management</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 25%; left: 15%;">Data Source</div>
+                        <div class="process-node" style="top: 25%; right: 15%;">Storefronts</div>
+                        <div class="process-node" style="top: 35%; right: 8%;">Marketplaces</div>
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">PIM</div>
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">POS</div>
+                        <div class="process-node" style="bottom: 35%; left: 25%;">PLM</div>
+                        <div class="process-node" style="bottom: 35%; right: 25%;">WMS</div>
+                        <div class="process-node" style="bottom: 20%; left: 30%;">CRM</div>
+                        <div class="process-node" style="bottom: 20%; right: 30%;">OMS</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 9: Customer Experience Management -->
+            <div class="page" id="page-9">
+                <div class="process-title">Customer Experience Management</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 25%; left: 15%;">PSA, Onboarding, & Implementation</div>
+                        <div class="process-node" style="top: 25%; right: 15%;">Product Usage</div>
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Support</div>
+                        <div class="process-node" style="bottom: 35%; left: 8%;">Advocacy</div>
+                        <div class="process-node" style="bottom: 35%; right: 8%;">Customer Success</div>
+                        <div class="process-node" style="bottom: 20%; left: 30%;">LMS Enablement</div>
+                        <div class="process-node" style="bottom: 20%; right: 30%;">Marketing</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 10: Data Warehouse -->
+            <div class="page" id="page-10">
+                <div class="process-title">Data Warehouse</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 25%; left: 15%;">Enterprise apps</div>
+                        <div class="process-node" style="top: 25%; right: 15%;">Data exploration</div>
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">IoT</div>
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">BI/reporting</div>
+                        <div class="process-node" style="bottom: 35%; left: 8%;">Web</div>
+                        <div class="process-node" style="bottom: 35%; right: 8%;">Predictive analytics</div>
+                        <div class="process-node" style="bottom: 25%; left: 15%;">Mobile</div>
+                        <div class="process-node" style="bottom: 25%; right: 15%;">Data-driven application</div>
+                        <div class="process-node" style="bottom: 25%; left: 25%;">Corporate</div>
+                        <div class="process-node" style="bottom: 25%; right: 25%;">3rd party</div>
+                        <div class="process-node" style="bottom: 15%; left: 50%; transform: translateX(-50%);">Cloud Data Warehouses</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Page 11: Demand Planning -->
+            <div class="page" id="page-11">
+                <div class="process-title">Demand Planning</div>
+                <div class="diagram-area">
+                    <div class="celigo-center">celigo</div>
+                    <div class="process-nodes">
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
+                        <div class="process-node" style="top: 25%; left: 15%;">Vendors</div>
+                        <div class="process-node" style="top: 25%; right: 15%;">Purchase Orders</div>
+                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">Receipts</div>
+                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Data Analytics</div>
+                        <div class="process-node" style="bottom: 35%; left: 25%;">Accounts</div>
+                        <div class="process-node" style="bottom: 35%; right: 25%;">Sales Orders</div>
+                        <div class="process-node" style="bottom: 20%; left: 20%;">Shipments</div>
+                        <div class="process-node" style="bottom: 20%; right: 20%;">Inventory</div>
+                        <div class="process-node" style="bottom: 15%; left: 50%; transform: translateX(-50%);">Product Information</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- App Tiles Drawer -->
+    <div class="app-tiles-drawer" id="tiles-drawer">
+        <div class="drawer-handle" id="drawer-handle">
+            <div class="resize-handle">
+                <div class="resize-row">
+                    <div class="resize-dot"></div>
+                    <div class="resize-dot"></div>
+                    <div class="resize-dot"></div>
+                </div>
+                <div class="resize-row">
+                    <div class="resize-dot"></div>
+                    <div class="resize-dot"></div>
+                    <div class="resize-dot"></div>
+                </div>
+            </div>
+        </div>
+        <div class="app-tiles-section">
+            <div class="tiles-grid">
+                <div class="tile-category">
+                    <div class="category-title">Storefronts</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Shopify</div>
+                        <div class="app-tile">Amazon</div>
+                        <div class="app-tile">eBay</div>
+                        <div class="app-tile">BigCommerce</div>
+                        <div class="app-tile">WooCommerce</div>
+                        <div class="app-tile">Magento</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Marketplaces</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Amazon</div>
+                        <div class="app-tile">eBay</div>
+                        <div class="app-tile">Walmart</div>
+                        <div class="app-tile">Newegg</div>
+                        <div class="app-tile">Etsy</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Supply Chain / Logistics</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">3PL</div>
+                        <div class="app-tile">EDI</div>
+                        <div class="app-tile">ShipStation</div>
+                        <div class="app-tile">FedEx</div>
+                        <div class="app-tile">UPS</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Returns</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Loop</div>
+                        <div class="app-tile">Happy Returns</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Payment Gateways</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">PayPal</div>
+                        <div class="app-tile">Stripe</div>
+                        <div class="app-tile">Square</div>
+                        <div class="app-tile">Authorize.net</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Universal Connectors</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">REST API</div>
+                        <div class="app-tile">CSV/FTP</div>
+                        <div class="app-tile">Database</div>
+                        <div class="app-tile">SOAP</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">HR</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">ADP</div>
+                        <div class="app-tile">BambooHR</div>
+                        <div class="app-tile">Workday</div>
+                        <div class="app-tile">Greenhouse</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Sales / Marketing</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Salesforce</div>
+                        <div class="app-tile">HubSpot</div>
+                        <div class="app-tile">Marketo</div>
+                        <div class="app-tile">Mailchimp</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Data Warehouse</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Snowflake</div>
+                        <div class="app-tile">BigQuery</div>
+                        <div class="app-tile">Redshift</div>
+                        <div class="app-tile">Azure Synapse</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Analytics</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Tableau</div>
+                        <div class="app-tile">Power BI</div>
+                        <div class="app-tile">Looker</div>
+                        <div class="app-tile">Google Analytics</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Customer 360</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Zendesk</div>
+                        <div class="app-tile">Freshworks</div>
+                        <div class="app-tile">Intercom</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Authentication and Development</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Okta</div>
+                        <div class="app-tile">Auth0</div>
+                        <div class="app-tile">GitHub</div>
+                        <div class="app-tile">Jenkins</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Productivity</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Office 365</div>
+                        <div class="app-tile">Google Workspace</div>
+                        <div class="app-tile">Box</div>
+                        <div class="app-tile">Slack</div>
+                    </div>
+                </div>
+
+                <div class="tile-category">
+                    <div class="category-title">Other</div>
+                    <div class="app-tiles">
+                        <div class="app-tile">Webhooks</div>
+                        <div class="app-tile">Custom API</div>
+                        <div class="app-tile">Legacy System</div>
+                        <div class="app-tile">File Transfer</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="reset-btn" onclick="resetTiles()">Reset All Tiles</button>
+
+    <script>
+        let currentPage = 1;
+        const totalPages = 11;
+        let draggedElement = null;
+        let droppedTiles = [];
+
+        // Process names for dropdown
+        const processNames = [
+            'Data Warehousing and Analytics',
+            'Human Resources / Hire to Retire',
+            'Marketing Automation',
+            'Finance Automation',
+            'SaaS, Services',
+            'Product Companies',
+            '3PL Process',
+            'Item Management',
+            'Customer Experience Management',
+            'Data Warehouse',
+            'Demand Planning'
+        ];
+
+        // Dropdown functionality
+        function toggleDropdown() {
+            const dropdown = document.getElementById('process-dropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown if clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.getElementById('process-dropdown');
+            const dropdownBtn = document.querySelector('.dropdown-btn');
+            
+            if (!dropdownBtn.contains(event.target)) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        function goToPage(pageNum) {
+            currentPage = pageNum;
+            showPage(currentPage);
+            
+            // Close dropdown
+            document.getElementById('process-dropdown').classList.remove('show');
+        }
+
+        // Drawer resize functionality
+        function initializeDrawerResize() {
+            const drawerHandle = document.getElementById('drawer-handle');
+            const drawer = document.getElementById('tiles-drawer');
+            
+            if (!drawerHandle || !drawer) return;
+            
+            let isResizing = false;
+            let startY = 0;
+            let startHeight = 0;
+
+            function handleMouseDown(e) {
+                isResizing = true;
+                startY = e.clientY;
+                startHeight = parseInt(window.getComputedStyle(drawer).height);
+                
+                document.addEventListener('mousemove', handleMouseMove);
+                document.addEventListener('mouseup', handleMouseUp);
+                
+                e.preventDefault();
+                e.stopPropagation();
+            }
+
+            function handleMouseMove(e) {
+                if (!isResizing) return;
+                
+                const deltaY = startY - e.clientY;
+                const newHeight = Math.max(50, Math.min(window.innerHeight * 0.7, startHeight + deltaY));
+                
+                drawer.style.height = newHeight + 'px';
+                e.preventDefault();
+            }
+
+            function handleMouseUp() {
+                isResizing = false;
+                document.removeEventListener('mousemove', handleMouseMove);
+                document.removeEventListener('mouseup', handleMouseUp);
+            }
+
+            drawerHandle.addEventListener('mousedown', handleMouseDown);
+        }
+
+        // Navigation functions
+        function nextPage() {
+            if (currentPage < totalPages) {
+                currentPage++;
+                showPage(currentPage);
+            }
+        }
+
+        function previousPage() {
+            if (currentPage > 1) {
+                currentPage--;
+                showPage(currentPage);
+            }
+        }
+
+        function showPage(pageNum) {
+            // Hide all pages
+            document.querySelectorAll('.page').forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show current page
+            document.getElementById(`page-${pageNum}`).classList.add('active');
+            
+            // Update page indicator
+            document.getElementById('current-page').textContent = pageNum;
+            
+            // Update process name in dropdown button
+            document.getElementById('current-process-name').textContent = processNames[pageNum - 1];
+            
+            // Update active dropdown item
+            document.querySelectorAll('.dropdown-item').forEach((item, index) => {
+                if (index === pageNum - 1) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+            
+            // Update navigation buttons
+            document.querySelector('.nav-btn').disabled = pageNum === 1;
+            document.querySelector('.nav-btn:last-of-type').disabled = pageNum === totalPages;
+            
+            // Restore dropped tiles for this page
+            restoreDroppedTiles(pageNum);
+        }
+
+        // Drag and drop functionality
+        let isDragging = false;
+        let startX, startY;
+        let offsetX, offsetY;
+
+        document.addEventListener('mousedown', handleStart);
+        document.addEventListener('touchstart', handleStart, { passive: false });
+        document.addEventListener('mousemove', handleMove);
+        document.addEventListener('touchmove', handleMove, { passive: false });
+        document.addEventListener('mouseup', handleEnd);
+        document.addEventListener('touchend', handleEnd);
+
+        function handleStart(e) {
+            const tile = e.target.closest('.app-tile');
+            if (!tile) return;
+
+            e.preventDefault();
+            isDragging = true;
+            
+            const clientX = e.type === 'mousedown' ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type === 'mousedown' ? e.clientY : e.touches[0].clientY;
+            
+            const rect = tile.getBoundingClientRect();
+            offsetX = clientX - rect.left;
+            offsetY = clientY - rect.top;
+            
+            // If it's already a dropped tile, move it directly
+            if (tile.classList.contains('dropped')) {
+                draggedElement = tile;
+                tile.classList.add('dragging');
+                tile.style.zIndex = '1000';
+                
+                // Store original position for potential restoration
+                tile.dataset.originalLeft = tile.style.left;
+                tile.dataset.originalTop = tile.style.top;
+            } else {
+                // Clone the tile for dragging from the drawer
+                const clone = tile.cloneNode(true);
+                clone.classList.add('dragging');
+                clone.style.position = 'fixed';
+                clone.style.left = clientX - offsetX + 'px';
+                clone.style.top = clientY - offsetY + 'px';
+                clone.style.pointerEvents = 'none';
+                clone.style.zIndex = '1000';
+                
+                document.body.appendChild(clone);
+                draggedElement = clone;
+            }
+        }
+
+        function handleMove(e) {
+            if (!isDragging || !draggedElement) return;
+            
+            e.preventDefault();
+            
+            const clientX = e.type === 'mousemove' ? e.clientX : e.touches[0].clientX;
+            const clientY = e.type === 'mousemove' ? e.clientY : e.touches[0].clientY;
+            
+            // Handle both dropped tiles and cloned tiles differently
+            if (draggedElement.classList.contains('dropped')) {
+                // For dropped tiles, update position relative to diagram area
+                const diagramArea = document.querySelector('.page.active .diagram-area');
+                const diagramRect = diagramArea.getBoundingClientRect();
+                
+                draggedElement.style.left = (clientX - diagramRect.left - offsetX) + 'px';
+                draggedElement.style.top = (clientY - diagramRect.top - offsetY) + 'px';
+            } else {
+                // For cloned tiles, update fixed position
+                draggedElement.style.left = clientX - offsetX + 'px';
+                draggedElement.style.top = clientY - offsetY + 'px';
+            }
+        }
+
+        function handleEnd(e) {
+            if (!isDragging || !draggedElement) return;
+            
+            e.preventDefault();
+            isDragging = false;
+            
+            const clientX = e.type === 'mouseup' ? e.clientX : e.changedTouches[0].clientX;
+            const clientY = e.type === 'mouseup' ? e.clientY : e.changedTouches[0].clientY;
+            
+            // Check if dropped in diagram area
+            const diagramArea = document.querySelector('.page.active .diagram-area');
+            const diagramRect = diagramArea.getBoundingClientRect();
+            
+            const isInDiagramArea = clientX >= diagramRect.left && clientX <= diagramRect.right &&
+                                   clientY >= diagramRect.top && clientY <= diagramRect.bottom;
+            
+            if (draggedElement.classList.contains('dropped')) {
+                // Handle repositioning of already-placed tile
+                draggedElement.classList.remove('dragging');
+                draggedElement.style.zIndex = '100';
+                
+                if (isInDiagramArea) {
+                    // Update the stored position in droppedTiles array
+                    const newX = clientX - diagramRect.left - offsetX;
+                    const newY = clientY - diagramRect.top - offsetY;
+                    
+                    // Find and update the tile in droppedTiles array
+                    const tileIndex = droppedTiles.findIndex(tile => 
+                        tile.page === currentPage && 
+                        tile.text === draggedElement.textContent &&
+                        Math.abs(parseFloat(tile.x) - parseFloat(draggedElement.dataset.originalLeft)) < 5 &&
+                        Math.abs(parseFloat(tile.y) - parseFloat(draggedElement.dataset.originalTop)) < 5
+                    );
+                    
+                    if (tileIndex >= 0) {
+                        droppedTiles[tileIndex].x = newX;
+                        droppedTiles[tileIndex].y = newY;
+                    }
+                } else {
+                    // If dragged outside diagram area, remove the tile
+                    const tileIndex = droppedTiles.findIndex(tile => 
+                        tile.page === currentPage && 
+                        tile.text === draggedElement.textContent &&
+                        Math.abs(parseFloat(tile.x) - parseFloat(draggedElement.dataset.originalLeft)) < 5 &&
+                        Math.abs(parseFloat(tile.y) - parseFloat(draggedElement.dataset.originalTop)) < 5
+                    );
+                    
+                    if (tileIndex >= 0) {
+                        droppedTiles.splice(tileIndex, 1);
+                    }
+                    
+                    draggedElement.remove();
+                }
+                
+                // Clean up temporary data
+                delete draggedElement.dataset.originalLeft;
+                delete draggedElement.dataset.originalTop;
+            } else {
+                // Handle new tile from drawer
+                if (isInDiagramArea) {
+                    // Create a new tile in the diagram area
+                    const newTile = document.createElement('div');
+                    newTile.className = 'app-tile dropped';
+                    newTile.textContent = draggedElement.textContent;
+                    newTile.style.position = 'absolute';
+                    newTile.style.left = (clientX - diagramRect.left - offsetX) + 'px';
+                    newTile.style.top = (clientY - diagramRect.top - offsetY) + 'px';
+                    newTile.style.zIndex = '100';
+                    
+                    diagramArea.appendChild(newTile);
+                    
+                    // Store the dropped tile data
+                    droppedTiles.push({
+                        page: currentPage,
+                        element: newTile,
+                        text: newTile.textContent,
+                        x: clientX - diagramRect.left - offsetX,
+                        y: clientY - diagramRect.top - offsetY
+                    });
+                }
+                
+                // Remove the dragging clone
+                if (draggedElement.parentNode) {
+                    draggedElement.parentNode.removeChild(draggedElement);
+                }
+            }
+            
+            draggedElement = null;
+        }
+
+        function restoreDroppedTiles(pageNum) {
+            // Remove existing dropped tiles from diagram
+            const diagramArea = document.querySelector('.page.active .diagram-area');
+            const existingDropped = diagramArea.querySelectorAll('.dropped');
+            existingDropped.forEach(tile => tile.remove());
+            
+            // Add tiles for current page
+            droppedTiles.filter(tile => tile.page === pageNum).forEach(tileData => {
+                const newTile = document.createElement('div');
+                newTile.className = 'app-tile dropped';
+                newTile.textContent = tileData.text;
+                newTile.style.position = 'absolute';
+                newTile.style.left = tileData.x + 'px';
+                newTile.style.top = tileData.y + 'px';
+                newTile.style.zIndex = '100';
+                
+                diagramArea.appendChild(newTile);
+            });
+        }
+
+        function resetTiles() {
+            // Remove all dropped tiles
+            droppedTiles = [];
+            document.querySelectorAll('.dropped').forEach(tile => tile.remove());
+        }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            showPage(1);
+            initializeDrawerResize();
+            loadAppLogos();
+        });
+
+        // Logo URL mapping - will work in production deployment
+        const logoUrls = {
+            "ADP": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/ADP.png",
+            "3PL": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/3PL%20Central.png"
+        };
+
+        // Fallback styling for demo when external images are blocked
+        const logoStyles = {
+            "ADP": { backgroundColor: "#e31e24", color: "white", fontWeight: "bold", fontSize: "16px" },
+            "3PL": { backgroundColor: "#0066cc", color: "white", fontWeight: "bold", fontSize: "12px" }
+        };
+
+        // Load app logos
+        function loadAppLogos() {
+            const allTiles = document.querySelectorAll('.app-tile');
+            
+            allTiles.forEach(tile => {
+                const tileText = tile.textContent.trim();
+                
+                if (logoUrls[tileText]) {
+                    const img = document.createElement('img');
+                    img.src = logoUrls[tileText];
+                    img.alt = tileText;
+                    
+                    img.onload = function() {
+                        console.log('Logo loaded successfully:', tileText);
+                    };
+                    
+                    img.onerror = function() {
+                        console.log('External logo blocked, using styled fallback for:', tileText);
+                        // Apply fallback styling
+                        if (logoStyles[tileText]) {
+                            Object.assign(tile.style, logoStyles[tileText]);
+                            tile.classList.add('has-logo');
+                        }
+                    };
+                    
+                    tile.innerHTML = '';
+                    tile.appendChild(img);
+                    tile.classList.add('has-logo');
+                }
+            });
+        }
+    </script>
+</body>
+</html>
