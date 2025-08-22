@@ -601,39 +601,129 @@
                         </div>
                     </div>
                     
-                    <div class="connection-lines">
-                        <!-- Example connections - need specific patterns from PDF -->
-                        <!-- Top to center -->
-                        <div class="connection-line solid vertical" style="top: 50%; left: 50%; width: 2px; height: 80px; transform: translate(-50%, -100%);"></div>
-                        <!-- Center to right -->
-                        <div class="connection-line dashed" style="top: 50%; left: 50%; width: 100px; height: 2px; transform: translateY(-50%);"></div>
-                        <!-- Center to bottom -->
-                        <div class="connection-line solid vertical" style="top: 50%; left: 50%; width: 2px; height: 80px; transform: translateX(-50%);"></div>
-                        <!-- Center to left -->
-                        <div class="connection-line dashed" style="top: 50%; left: 50%; width: 100px; height: 2px; transform: translate(-100%, -50%);"></div>
-                    </div>
+                    <!-- Connection lines with lighter weight matching legend -->
+                    <svg style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 5;">
+                        <!-- 0°: Oracle NetSuite to center - SOLID (Current State) -->
+                        <line x1="50%" y1="15%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 30°: Data Exploration to center - DASHED (Future State) -->
+                        <line x1="67.5%" y1="19.7%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 60°: BI/Reporting to center - DASHED (Future State) -->
+                        <line x1="80.3%" y1="32.5%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 90°: Predictive Analytics to center - DASHED (Future State) -->
+                        <line x1="85%" y1="50%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 120°: Data-driven Application to center - DASHED (Future State) -->
+                        <line x1="80.3%" y1="67.5%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 150°: 3rd Party to center - DASHED (Future State) -->
+                        <line x1="67.5%" y1="80.3%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 180°: Cloud Data Warehouses to center - DASHED (Future State) -->
+                        <line x1="50%" y1="85%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 210°: Corporate to center - DASHED (Future State) -->
+                        <line x1="32.5%" y1="80.3%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 240°: Mobile to center - DASHED (Future State) -->
+                        <line x1="19.7%" y1="67.5%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 270°: Web to center - DASHED (Future State) -->
+                        <line x1="15%" y1="50%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 300°: IoT to center - DASHED (Future State) -->
+                        <line x1="19.7%" y1="32.5%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                        
+                        <!-- 330°: Enterprise apps to center - DASHED (Future State) -->
+                        <line x1="32.5%" y1="19.7%" x2="50%" y2="50%" 
+                              stroke="black" 
+                              stroke-width="2" 
+                              stroke-dasharray="8,5" 
+                              stroke-linecap="round"/>
+                    </svg>
                     
                     <div class="celigo-center">celigo</div>
                     <div class="process-nodes">
-                        <!-- Top -->
-                        <div class="process-node" style="top: 8%; left: 50%; transform: translateX(-50%);">ORACLE NetSuite</div>
-                        <!-- Top-right -->
-                        <div class="process-node" style="top: 15%; right: 15%;">BI/reporting</div>
-                        <!-- Right -->
-                        <div class="process-node" style="top: 50%; right: 8%; transform: translateY(-50%);">Predictive analytics</div>
-                        <!-- Bottom-right -->
-                        <div class="process-node" style="bottom: 15%; right: 15%;">Data-driven application</div>
-                        <!-- Bottom -->
-                        <div class="process-node" style="bottom: 8%; left: 50%; transform: translateX(-50%);">Cloud Data Warehouses</div>
-                        <!-- Bottom-left -->
-                        <div class="process-node" style="bottom: 15%; left: 15%;">Mobile</div>
-                        <!-- Left -->
-                        <div class="process-node" style="top: 50%; left: 8%; transform: translateY(-50%);">Web</div>
-                        <!-- Top-left -->
-                        <div class="process-node" style="top: 15%; left: 15%;">IoT</div>
-                        <!-- Additional inner nodes -->
-                        <div class="process-node" style="bottom: 30%; left: 25%;">Corporate</div>
-                        <div class="process-node" style="bottom: 30%; right: 25%;">3rd party</div>
+                        <!-- 0° (12 o'clock) - Oracle NetSuite with black border -->
+                        <div class="process-node" style="top: 15%; left: 50%; transform: translate(-50%, -50%); border: 2px solid black;">ORACLE NetSuite</div>
+                        
+                        <!-- 30° (1 o'clock) - Data Exploration -->
+                        <div class="process-node" style="top: 19.7%; left: 67.5%; transform: translate(-50%, -50%);">Data Exploration</div>
+                        
+                        <!-- 60° (2 o'clock) - BI/Reporting -->
+                        <div class="process-node" style="top: 32.5%; left: 80.3%; transform: translate(-50%, -50%);">BI/Reporting</div>
+                        
+                        <!-- 90° (3 o'clock) - Predictive Analytics -->
+                        <div class="process-node" style="top: 50%; left: 85%; transform: translate(-50%, -50%);">Predictive Analytics</div>
+                        
+                        <!-- 120° (4 o'clock) - Data-driven Application -->
+                        <div class="process-node" style="top: 67.5%; left: 80.3%; transform: translate(-50%, -50%);">Data-driven Application</div>
+                        
+                        <!-- 150° (5 o'clock) - 3rd Party -->
+                        <div class="process-node" style="top: 80.3%; left: 67.5%; transform: translate(-50%, -50%);">3rd Party</div>
+                        
+                        <!-- 180° (6 o'clock) - Cloud Data Warehouses -->
+                        <div class="process-node" style="top: 85%; left: 50%; transform: translate(-50%, -50%);">Cloud Data Warehouses</div>
+                        
+                        <!-- 210° (7 o'clock) - Corporate -->
+                        <div class="process-node" style="top: 80.3%; left: 32.5%; transform: translate(-50%, -50%);">Corporate</div>
+                        
+                        <!-- 240° (8 o'clock) - Mobile -->
+                        <div class="process-node" style="top: 67.5%; left: 19.7%; transform: translate(-50%, -50%);">Mobile</div>
+                        
+                        <!-- 270° (9 o'clock) - Web -->
+                        <div class="process-node" style="top: 50%; left: 15%; transform: translate(-50%, -50%);">Web</div>
+                        
+                        <!-- 300° (10 o'clock) - IoT -->
+                        <div class="process-node" style="top: 32.5%; left: 19.7%; transform: translate(-50%, -50%);">IoT</div>
+                        
+                        <!-- 330° (11 o'clock) - Enterprise apps -->
+                        <div class="process-node" style="top: 19.7%; left: 32.5%; transform: translate(-50%, -50%);">Enterprise apps</div>
                     </div>
                 </div>
             </div>
@@ -1047,6 +1137,60 @@
             'Demand Planning'
         ];
 
+        // Logo URL mapping - expanded to include all available logos
+        const logoUrls = {
+            "ADP": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/ADP.png",
+            "3PL": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/3PL%20Central.png",
+            "ORACLE NetSuite": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/NetSuite.png",
+            "NetSuite": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/NetSuite.png",
+            "Amazon": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Amazon.png",
+            "Authorize.net": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/AuthorizeNet.png",
+            "Azure": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Azure.png",
+            "BambooHR": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/BambooHR.png",
+            "BigCommerce": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/BigCommerce.png",
+            "eBay": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Ebay.png",
+            "Etsy": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Etsy.png",
+            "Freshworks": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Freshworks.png",
+            "Google Analytics": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/GoogleAnalytics.png",
+            "Greenhouse": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Greenhouse.png",
+            "Happy Returns": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/HappyReturns.png",
+            "HubSpot": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/HubSpot.png",
+            "Intercom": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Intercom.png",
+            "Looker": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Looker.png",
+            "Loop": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Loop.png",
+            "Magento": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Magento.png",
+            "Mailchimp": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Mailchimp.png",
+            "Marketo": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Marketo.png",
+            "Newegg": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/NewEgg.png",
+            "PayPal": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/PayPal.png",
+            "Power BI": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/PowerBI.png",
+            "Redshift": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Redshift.png",
+            "Salesforce": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Salesforce.png",
+            "ShipStation": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Shipstation.png",
+            "Shopify": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Shopify.png",
+            "Snowflake": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Snowflake.png",
+            "Square": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Square.png",
+            "Stripe": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Stripe.png",
+            "Tableau": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Tableau.png",
+            "UPS": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/UPS.png",
+            "Walmart": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Walmart.png",
+            "WooCommerce": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/WooCommerce.png",
+            "Workday": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Workday.png",
+            "Zendesk": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/Zendesk.png"
+        };
+
+        // Fallback styling for demo when external images are blocked (simplified for large logo set)
+        const logoStyles = {
+            "ADP": { backgroundColor: "#e31e24", color: "white", fontWeight: "bold", fontSize: "16px" },
+            "3PL": { backgroundColor: "#0066cc", color: "white", fontWeight: "bold", fontSize: "12px" },
+            "Amazon": { backgroundColor: "#ff9900", color: "white", fontWeight: "bold", fontSize: "14px" },
+            "Salesforce": { backgroundColor: "#00a1e0", color: "white", fontWeight: "bold", fontSize: "12px" },
+            "Shopify": { backgroundColor: "#7ab55c", color: "white", fontWeight: "bold", fontSize: "14px" },
+            "PayPal": { backgroundColor: "#0070ba", color: "white", fontWeight: "bold", fontSize: "14px" },
+            "Stripe": { backgroundColor: "#635bff", color: "white", fontWeight: "bold", fontSize: "14px" },
+            "Square": { backgroundColor: "#000000", color: "white", fontWeight: "bold", fontSize: "14px" }
+        };
+
         // Dropdown functionality
         function toggleDropdown() {
             const dropdown = document.getElementById('process-dropdown');
@@ -1296,7 +1440,19 @@
                     // Create a new tile in the diagram area
                     const newTile = document.createElement('div');
                     newTile.className = 'app-tile dropped';
-                    newTile.textContent = draggedElement.textContent;
+                    
+                    // Preserve the original content (text or logo)
+                    if (draggedElement.querySelector('img')) {
+                        // Clone the image if it exists
+                        const originalImg = draggedElement.querySelector('img');
+                        const newImg = originalImg.cloneNode(true);
+                        newTile.appendChild(newImg);
+                        newTile.classList.add('has-logo');
+                    } else {
+                        // Use text content for non-logo tiles
+                        newTile.textContent = draggedElement.textContent;
+                    }
+                    
                     newTile.style.position = 'absolute';
                     newTile.style.left = (clientX - diagramRect.left - offsetX) + 'px';
                     newTile.style.top = (clientY - diagramRect.top - offsetY) + 'px';
@@ -1308,7 +1464,7 @@
                     droppedTiles.push({
                         page: currentPage,
                         element: newTile,
-                        text: newTile.textContent,
+                        text: draggedElement.textContent || draggedElement.querySelector('img')?.alt || 'Logo',
                         x: clientX - diagramRect.left - offsetX,
                         y: clientY - diagramRect.top - offsetY
                     });
@@ -1333,7 +1489,19 @@
             droppedTiles.filter(tile => tile.page === pageNum).forEach(tileData => {
                 const newTile = document.createElement('div');
                 newTile.className = 'app-tile dropped';
-                newTile.textContent = tileData.text;
+                
+                // Check if this should be a logo tile by looking up in logoUrls
+                const tileName = tileData.text;
+                if (logoUrls[tileName]) {
+                    const img = document.createElement('img');
+                    img.src = logoUrls[tileName];
+                    img.alt = tileName;
+                    newTile.appendChild(img);
+                    newTile.classList.add('has-logo');
+                } else {
+                    newTile.textContent = tileData.text;
+                }
+                
                 newTile.style.position = 'absolute';
                 newTile.style.left = tileData.x + 'px';
                 newTile.style.top = tileData.y + 'px';
@@ -1349,30 +1517,12 @@
             document.querySelectorAll('.dropped').forEach(tile => tile.remove());
         }
 
-        // Initialize when page loads
-        window.addEventListener('load', function() {
-            showPage(1);
-            initializeDrawerResize();
-            loadAppLogos();
-        });
-
-        // Logo URL mapping - will work in production deployment
-        const logoUrls = {
-            "ADP": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/ADP.png",
-            "3PL": "https://raw.githubusercontent.com/kenekenner/SW2025-App-Logos/main/3PL%20Central.png"
-        };
-
-        // Fallback styling for demo when external images are blocked
-        const logoStyles = {
-            "ADP": { backgroundColor: "#e31e24", color: "white", fontWeight: "bold", fontSize: "16px" },
-            "3PL": { backgroundColor: "#0066cc", color: "white", fontWeight: "bold", fontSize: "12px" }
-        };
-
-        // Load app logos
+        // Load app logos from uploaded files
         function loadAppLogos() {
-            const allTiles = document.querySelectorAll('.app-tile');
+            // Load logos for app tiles
+            const logoTiles = document.querySelectorAll('.app-tile');
             
-            allTiles.forEach(tile => {
+            logoTiles.forEach(tile => {
                 const tileText = tile.textContent.trim();
                 
                 if (logoUrls[tileText]) {
@@ -1398,7 +1548,40 @@
                     tile.classList.add('has-logo');
                 }
             });
+
+            // Load logo for NetSuite process node
+            const netsuiteNode = document.querySelector('.process-node');
+            if (netsuiteNode && netsuiteNode.textContent.includes('NetSuite')) {
+                const nodeText = netsuiteNode.textContent.trim();
+                
+                if (logoUrls[nodeText]) {
+                    const img = document.createElement('img');
+                    img.src = logoUrls[nodeText];
+                    img.alt = nodeText;
+                    img.style.maxWidth = '60px';
+                    img.style.maxHeight = '30px';
+                    img.style.objectFit = 'contain';
+                    
+                    img.onload = function() {
+                        console.log('NetSuite logo loaded successfully');
+                    };
+                    
+                    img.onerror = function() {
+                        console.log('NetSuite logo failed to load');
+                    };
+                    
+                    netsuiteNode.innerHTML = '';
+                    netsuiteNode.appendChild(img);
+                }
+            }
         }
+
+        // Initialize when page loads
+        window.addEventListener('load', function() {
+            showPage(1);
+            initializeDrawerResize();
+            loadAppLogos();
+        });
     </script>
 </body>
 </html>
